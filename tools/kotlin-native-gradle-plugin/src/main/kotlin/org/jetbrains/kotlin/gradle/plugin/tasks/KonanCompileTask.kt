@@ -16,6 +16,7 @@
 
 package org.jetbrains.kotlin.gradle.plugin.tasks
 
+import org.gradle.api.artifacts.FileCollectionDependency
 import org.gradle.api.file.FileCollection
 import org.gradle.api.tasks.*
 import org.jetbrains.kotlin.gradle.plugin.*
@@ -99,6 +100,12 @@ abstract class KonanCompileTask: KonanBuildingTask(), KonanCompileSpec {
 
         addArgs("-repo", libraries.repos.map { it.canonicalPath })
 
+        if (configuration.files.isNotEmpty()) {
+            configuration.files.filter { it.name.endsWith(".klib") }.forEach {
+                addFileArgs("-library", project.files(it.absolutePath))
+            }
+
+        }
         addFileArgs("-library", libraries.files)
         addArgs("-library", libraries.namedKlibs)
         addArgs("-library", libraries.artifacts.map { it.artifact.canonicalPath })
